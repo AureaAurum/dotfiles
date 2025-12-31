@@ -1,3 +1,11 @@
+# --- Homebrew (Linux/macOS) ---
+# Ensure Homebrew is in PATH before checking for tools
+if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [ -f "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # --- Environment ---
 export PATH=$HOME/.local/bin:$PATH
 
@@ -23,13 +31,16 @@ if command -v eza >/dev/null; then
 fi
 
 # bat (cat replacement)
-# 'bat' command is expected to be available (linked from batcat by ansible if needed)
+if command -v bat >/dev/null; then
+    # bat is usually 'bat' on brew, 'batcat' on apt (but we are using brew now)
+    # No alias needed if native command is used, but ensuring config is clean
+    export BAT_THEME="ansi" 
+fi
 
 # Others
 # rg (ripgrep), fd (fd-find) are used directly.
 
-# Git Delta configuration (if not in .gitconfig)
+# Git Delta configuration
 if command -v delta >/dev/null; then
-    # These are usually best in .gitconfig, but for reference:
     export GIT_PAGER="delta"
 fi
