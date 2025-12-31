@@ -47,11 +47,22 @@ fi
 
 # --- Plugins (zsh-syntax-highlighting, zsh-autosuggestions) ---
 # Must be at the end
+
+# 1. Try Homebrew (Linuxbrew/macOS)
 if [ -n "$HOMEBREW_PREFIX" ]; then
     if [ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
         source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
     fi
     if [ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
         source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    fi
+# 2. Try System packages (Debian/Ubuntu/Fedora)
+else
+    # Debian/Ubuntu often places them in /usr/share/...
+    if [ -f "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+        source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    fi
+    if [ -f "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+        source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
     fi
 fi
