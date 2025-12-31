@@ -2,8 +2,13 @@
 # Ensure Homebrew is in PATH before checking for tools
 if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
 elif [ -f "/opt/homebrew/bin/brew" ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
+    HOMEBREW_PREFIX="/opt/homebrew"
+elif [ -f "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+    HOMEBREW_PREFIX="/usr/local"
 fi
 
 # --- Environment ---
@@ -16,6 +21,16 @@ if command -v starship >/dev/null; then
 fi
 if command -v zoxide >/dev/null; then
     eval "$(zoxide init zsh --cmd cd)"
+fi
+
+# --- Plugins (zsh-syntax-highlighting, zsh-autosuggestions) ---
+if [ -n "$HOMEBREW_PREFIX" ]; then
+    if [ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+        source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    fi
+    if [ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+        source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    fi
 fi
 
 # --- Aliases ---
@@ -32,13 +47,8 @@ fi
 
 # bat (cat replacement)
 if command -v bat >/dev/null; then
-    # bat is usually 'bat' on brew, 'batcat' on apt (but we are using brew now)
-    # No alias needed if native command is used, but ensuring config is clean
     export BAT_THEME="ansi" 
 fi
-
-# Others
-# rg (ripgrep), fd (fd-find) are used directly.
 
 # Git Delta configuration
 if command -v delta >/dev/null; then
