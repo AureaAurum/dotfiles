@@ -1,0 +1,52 @@
+# ~/.config/starship.toml
+
+# A minimal, clean theme
+format = """
+[┌───────────────────](bold green)
+[│](bold green)$username$hostname$directory$git_branch$git_status$fill$time
+[└─>](bold green) """
+
+# Disable the blank line at the start of the prompt
+add_newline = true
+
+[username]
+show_always = true
+style_user = "bg:none fg:cyan bold"
+style_root = "bg:none fg:red bold"
+format = "[$user]($style) "
+disabled = false
+
+[hostname]
+ssh_only = true
+format = "on [$hostname](bold red) "
+disabled = false
+
+[directory]
+style = "blue bold"
+truncation_length = 3
+truncate_to_repo = false
+format = "[$path]($style) "
+
+[git_branch]
+symbol = " "
+style = "bg:none fg:purple bold"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "bg:none fg:purple bold"
+format = "([$all_status$ahead_behind]($style) )"
+
+[time]
+disabled = false
+time_format = "%T" # Hour:Minute:Second
+style = "bg:none fg:yellow"
+format = "[$time]($style) [│](bold green)"
+
+[fill]
+symbol = " "
+style = "bold green"
+
+# Language sections (example)
+[python]
+symbol = "🐍 "
+format = "[$symbol$version]($style) "
