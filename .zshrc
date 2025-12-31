@@ -23,23 +23,9 @@ if command -v zoxide >/dev/null; then
     eval "$(zoxide init zsh --cmd cd)"
 fi
 
-# --- Zeno.zsh ---
-if [ -f "$HOME/.local/share/zeno/zeno.zsh" ] && command -v deno >/dev/null; then
-    export ZENO_HOME="$HOME/.local/share/zeno"
-    export ZENO_ENABLE_SOCK=1
-    export ZENO_GIT_CAT="bat --color=always"
-    export ZENO_GIT_TREE="eza --tree"
-    source "$ZENO_HOME/zeno.zsh"
-    
-    # Keybindings (Optional, but recommended)
-    bindkey ' '  zeno-auto-snippet
-    bindkey '^ ' zeno-completion  # Ctrl+Space
-    bindkey '^M' zeno-auto-snippet-and-accept-line
-fi
-
 # --- Aliases ---
 # Note: Standard commands (ls, cat, find, grep) are preserved for AI compatibility.
-# Use these modern alternatives for interactive use:
+# use these modern alternatives for interactive use:
 
 # eza (ls replacement)
 if command -v eza >/dev/null; then
@@ -51,7 +37,33 @@ fi
 
 # bat (cat replacement)
 if command -v bat >/dev/null; then
-    export BAT_THEME="ansi" 
+    export BAT_THEME="ansi"
+    alias cat='bat'
+fi
+
+# procs (ps replacement)
+if command -v procs >/dev/null; then
+    alias ps='procs'
+fi
+
+# dust (du replacement)
+if command -v dust >/dev/null; then
+    alias du='dust'
+fi
+
+# duf (df replacement)
+if command -v duf >/dev/null; then
+    alias df='duf'
+fi
+
+# ripgrep (grep replacement)
+if command -v rg >/dev/null; then
+    alias grep='rg'
+fi
+
+# fd (find replacement)
+if command -v fd >/dev/null; then
+    alias find='fd'
 fi
 
 # Git Delta configuration
