@@ -31,8 +31,6 @@ if [[ -o interactive ]]; then
     if command -v eza >/dev/null; then
         alias ls='eza -h --icons --git'
         alias ll='eza -lh --icons --git'
-        alias la='eza -lha --icons --git'
-        alias l='eza --icons --git'
         alias lt='eza --tree --level=2 --icons'
     fi
 
