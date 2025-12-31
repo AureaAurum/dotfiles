@@ -3,6 +3,7 @@
 format = """
 [](color_orange)\
 $os\
+$hostname\
 $username\
 [](bg:color_yellow fg:color_orange)\
 $directory\
@@ -29,8 +30,9 @@ $time\
 [ ](fg:color_bg1)\
 $line_break$character"""
 
-palette = 'gruvbox_dark'
 
+palette = 'gruvbox_dark'
+continuation_prompt = '▶▶ '
 [palettes.gruvbox_dark]
 color_fg0 = '#fbf1c7'
 color_bg1 = '#3c3836'
@@ -48,34 +50,40 @@ disabled = false
 style = "bg:color_orange fg:color_fg0"
 
 [os.symbols]
-Windows = "󰍲"
-Ubuntu = "󰕈"
-SUSE = ""
-Raspbian = "󰐿"
-Mint = "󰣭"
-Macos = "󰀵"
-Manjaro = ""
-Linux = "󰌽"
-Gentoo = "󰣨"
-Fedora = "󰣛"
-Alpine = ""
-Amazon = ""
-Android = ""
-AOSC = ""
-Arch = "󰣇"
-Artix = "󰣇"
-EndeavourOS = ""
-CentOS = ""
-Debian = "󰣚"
-Redhat = "󱄛"
-RedHatEnterprise = "󱄛"
-Pop = ""
+Windows = "󰍲 "
+Ubuntu = "󰕈 "
+SUSE = " "
+Raspbian = "󰐿 "
+Mint = "󰣭 "
+Macos = "󰀵 "
+Manjaro = " "
+Linux = "󰌽 "
+Gentoo = "󰣨 "
+Fedora = "󰣛 "
+Alpine = " "
+Amazon = " "
+Android = " "
+AOSC = " "
+Arch = "󰣇 "
+Artix = "󰣇 "
+EndeavourOS = " "
+CentOS = " "
+Debian = "󰣚 "
+Redhat = "󱄛 "
+RedHatEnterprise = "󱄛 "
+Pop = " "
 
 [username]
 show_always = true
 style_user = "bg:color_orange fg:color_fg0"
 style_root = "bg:color_orange fg:color_fg0"
 format = '[ $user ]($style)'
+
+[hostname]
+ssh_only = false
+style = "bg:color_orange fg:color_fg0 bold"
+format = '[$hostname]($style)'
+disabled = false
 
 [directory]
 style = "fg:color_fg0 bg:color_yellow"
