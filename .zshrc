@@ -23,16 +23,6 @@ if command -v zoxide >/dev/null; then
     eval "$(zoxide init zsh --cmd cd)"
 fi
 
-# --- Plugins (zsh-syntax-highlighting, zsh-autosuggestions) ---
-if [ -n "$HOMEBREW_PREFIX" ]; then
-    if [ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
-        source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-    fi
-    if [ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
-        source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-    fi
-fi
-
 # --- Aliases ---
 # Note: Standard commands (ls, cat, find, grep) are preserved for AI compatibility.
 # Use these modern alternatives for interactive use:
@@ -53,4 +43,15 @@ fi
 # Git Delta configuration
 if command -v delta >/dev/null; then
     export GIT_PAGER="delta"
+fi
+
+# --- Plugins (zsh-syntax-highlighting, zsh-autosuggestions) ---
+# Must be at the end
+if [ -n "$HOMEBREW_PREFIX" ]; then
+    if [ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+        source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    fi
+    if [ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+        source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    fi
 fi
