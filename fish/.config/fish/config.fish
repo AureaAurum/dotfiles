@@ -75,6 +75,6 @@ if status is-interactive
     # Fzf configuration
     if functions -q fzf_configure_bindings
         # set up fzf key bindings
-        fzf_configure_bindings --directory=\ct --git_log=\cg --git_status=\cs --processes=\cp --variables=\cv 2>/dev/null
+        fzf_configure_bindings --directory=\ct --git_status=\cs --processes=\cp --variables=\cv 2>/dev/null
     end
 end
