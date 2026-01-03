@@ -73,7 +73,7 @@ if status is-interactive
     alias gp="git push"
 
     # Fzf configuration
-    if type -q fzf
+    if functions -q fzf_configure_bindings
         # set up fzf key bindings
         fzf_configure_bindings --directory=\ct --git_log=\cg --git_status=\cs --processes=\cp --variables=\cv 2>/dev/null
     end
