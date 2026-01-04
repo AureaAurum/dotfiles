@@ -4,12 +4,24 @@ if status is-interactive
     # Disable default greeting
     set -U fish_greeting
 
-    # Homebrew Setup
+    # --- Homebrew Setup (条件分岐でエラー回避) ---
+    # Linuxbrewのディレクトリが存在する場合のみ読み込む
     if test -d /home/linuxbrew/.linuxbrew
         eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
     end
-    if test -d (brew --prefix)"/share/fish/vendor_completions.d"
-        set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+
+    # brewコマンドが使える状態になっている場合のみ、補完設定を読み込む
+    if type -q brew
+        if test -d (brew --prefix)"/share/fish/vendor_completions.d"
+            set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+        end
+    end
+
+    # --- Tool Initialization ---
+
+    # Initialize Mise (これを忘れると言語が動きません！)
+    if type -q mise
+        mise activate fish | source
     end
 
     # Initialize Starship
@@ -32,10 +44,10 @@ if status is-interactive
     # 'ls' family (using eza)
     if type -q eza
         function ls --wraps eza
-            eza --icons $argv
+            eza --icons --git $argv
         end
         abbr -a ll "ls -l"
-        abbr -a la "ls -a"
+        abbr -a la "ls -la"
         abbr -a lt "ls --tree --level=2"
     end
 
