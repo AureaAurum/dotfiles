@@ -8,6 +8,9 @@ if status is-interactive
     if test -d /home/linuxbrew/.linuxbrew
         eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
     end
+    if test -d (brew --prefix)"/share/fish/vendor_completions.d"
+    set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+end
 
     # Initialize Starship
     if type -q starship
@@ -16,7 +19,7 @@ if status is-interactive
 
     # Initialize Zoxide (smarter cd)
     if type -q zoxide
-        zoxide init fish | source
+        zoxide init fish --cmd cd | source
     end
 
     # Initialize Navi (cheatsheets)
@@ -28,7 +31,9 @@ if status is-interactive
 
     # 'ls' family (using eza)
     if type -q eza
-        alias ls="eza --icons"
+        function ls --wraps eza
+            eza --icons $argv
+        end
         abbr -a ll "ls -l"
         abbr -a la "ls -a"
         abbr -a lt "ls --tree --level=2"
@@ -36,45 +41,69 @@ if status is-interactive
 
     # cat -> bat
     if type -q bat
-        alias cat="bat"
+        function cat --wraps bat
+            bat $argv
+        end
     end
 
     # procs (ps replacement)
     if type -q procs
-        alias ps="procs"
+        function ps --wraps procs
+            procs $argv
+        end
     end
 
     # dust (du replacement)
     if type -q dust
-        alias du="dust"
+        function du --wraps dust
+            dust $argv
+        end
     end
 
     # duf (df replacement)
     if type -q duf
-        alias df="duf"
+        function df --wraps duf
+            duf $argv
+        end
     end
 
     # ripgrep (grep replacement)
     if type -q rg
-        alias grep="rg"
+        function grep --wraps rg
+            rg $argv
+        end
     end
 
     # fd (find replacement)
     if type -q fd
-        alias find="fd"
+        function find --wraps fd
+            fd $argv
+        end
     end
 
     # Common Git Shortcuts
-    alias g="git"
-    alias gs="git status"
-    alias ga="git add"
-    alias gc="git commit"
-    alias gl="git pull"
-    alias gp="git push"
+    function g --wraps git
+        git $argv
+    end
+    function gs --wraps "git status"
+        git status $argv
+    end
+    function ga --wraps "git add"
+        git add $argv
+    end
+    function gc --wraps "git commit"
+        git commit $argv
+    end
+    function gl --wraps "git pull"
+        git pull $argv
+    end
+    function gp --wraps "git push"
+        git push $argv
+    end
 
     # Fzf configuration
     if functions -q fzf_configure_bindings
         # set up fzf key bindings
-        fzf_configure_bindings --directory=\ct --git_status=\cs --processes=\cp --variables=\cv 2>/dev/null
+        fzf_configure_bindings --directory=\ct 2>/dev/null
     end
 end
