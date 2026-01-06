@@ -91,7 +91,7 @@ if status is-interactive
     # ripgrep (grep replacement)
     if type -q rg
         function grep --wraps rg
-            rg $argv
+            rg -i $argv
         end
     end
 
