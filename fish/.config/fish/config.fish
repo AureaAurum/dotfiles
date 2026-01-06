@@ -34,6 +34,15 @@ if status is-interactive
         zoxide init fish --cmd cd | source
     end
 
+    if status is-interactive
+        if not set -q ZELLIJ
+            # 既存セッションへのアタッチはせず、常に新規or名前指定で起動し、
+            # 抜けた（exitした）瞬間にそのシェルも閉じる
+            zellij
+            exit
+        end
+    end
+
     # Initialize Navi (cheatsheets)
     if type -q navi
         navi widget fish | source
