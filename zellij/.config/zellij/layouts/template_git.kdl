@@ -1,0 +1,26 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    tab focus=true {
+        pane split_direction="vertical" {
+            // 左：メイン
+            pane focus=true
+            
+            // 右：30%の幅
+            pane split_direction="horizontal" size="30%" {
+                // 右上：lazygit
+                pane command="lazygit"
+                // 右下：btm（50%の高さ）
+                pane command="btm" size="50%"
+            }
+        }
+    }
+}
