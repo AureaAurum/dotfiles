@@ -40,59 +40,58 @@ if status is-interactive
 
     if status is-interactive
         if not set -q ZELLIJ
-            # --- 1. ベースとなるセッション名とディレクトリの決定 ---
+            # --- 1. セッション名とディレクトリの決定 ---
             set -l repo_root (git rev-parse --show-toplevel 2>/dev/null)
-
-            # 変数のスコープを確保
             set -l session_name
-            set -l target_dir
             set -l is_git false
 
             if test -n "$repo_root"
                 set session_name (basename $repo_root)
-                set target_dir $repo_root
                 set is_git true
             else
                 set session_name (basename $PWD)
-                set target_dir $PWD
             end
 
-            # ドットなどは置換（例: my.app -> my_app）
+            # ドットやスペースをアンダースコアに置換
             set session_name (string replace -a . _ $session_name)
+            set session_name (string replace -a " " _ $session_name)
 
-            # --- 2. VS Code判定とレイアウト設定 ---
-            # layout_arg を空のリストとして初期化（これが重要！）
-            # 中身がない場合、コマンド実行時に引数そのものが消滅します
+            # --- 2. VS Codeと通常端末の完全分離 ---
             set -l layout_arg
 
             if test "$TERM_PROGRAM" = "vscode"
-                # 【VS Codeの場合】
-                # 1. セッション名に "-vscode" を付けて完全に別物にする
+                # VS Codeの場合: 末尾に -vscode を強制付与し、レイアウトは指定しない
                 set session_name "$session_name-vscode"
-                # 2. layout_arg は空のまま（＝デフォルトのシンプル画面）
-                #set -l project_layout "$HOME/.config/zellij/layouts/$session_name.kdl"
-
             else
-                # 【Ghosttyなどその他の場合】
+                # VS Code以外の場合: 通常の名前を使用し、レイアウトを決定
                 set -l project_layout "$HOME/.config/zellij/layouts/$session_name.kdl"
 
                 if test -f "$project_layout"
-                    # プロジェクト専用レイアウトがあれば優先
                     set layout_arg --layout "$project_layout"
                 else if $is_git
-                    # Gitリポジトリならリッチな構成 (lazygit + btm)
                     set layout_arg --layout "$HOME/.config/zellij/layouts/template_git.kdl"
                 else
-                    # それ以外なら通常構成 (btmのみ)
-                    set layout_arg --layout "$HOME/.config/zellij/layouts/template_basic.kdl"
+                    set layout_arg --layout "$HOME/.config/zellij/layouts/template_default.kdl"
                 end
             end
 
-            # --- 3. 起動 ---
-            # $layout_arg が空のときは、オプション自体が渡されずエラーになりません
-            exec zellij attach --create $session_name $layout_arg
+            # --- 3. 起動ロジック (ここが重要) ---
+            # 実行中のセッション一覧を取得 (-nで名前のみ、-sでショート形式)
+            set -l active_sessions (zellij list-sessions -n -s 2>/dev/null)
+
+            # セッション名が完全一致で存在するか確認
+            if contains $session_name $active_sessions
+                # 存在する -> アタッチする
+                exec zellij attach $session_name
+            else
+                # 存在しない -> レイアウトを指定して新規作成する
+                # ($layout_arg が空ならデフォルトレイアウトになります)
+                exec zellij -n $session_name $layout_arg
+            end
         end
     end
+
+
     # Initialize Navi (cheatsheets)
     if type -q navi
         navi widget fish | source
