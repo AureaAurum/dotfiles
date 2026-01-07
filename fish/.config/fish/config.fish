@@ -56,38 +56,33 @@ if status is-interactive
             set session_name (string replace -a . _ $session_name)
             set session_name (string replace -a " " _ $session_name)
 
-            # --- 2. VS Codeと通常端末の完全分離 ---
+            # --- 2. VS Code判定とレイアウト設定 ---
+            # layout_arg をリストとして初期化
             set -l layout_arg
 
             if test "$TERM_PROGRAM" = "vscode"
-                # VS Codeの場合: 末尾に -vscode を強制付与し、レイアウトは指定しない
+                # VS Codeの場合: 名前を変えて、レイアウト指定なし
                 set session_name "$session_name-vscode"
             else
-                # VS Code以外の場合: 通常の名前を使用し、レイアウトを決定
+                # Ghosttyなどの場合: レイアウトを設定
                 set -l project_layout "$HOME/.config/zellij/layouts/$session_name.kdl"
 
                 if test -f "$project_layout"
+                    # プロジェクト専用レイアウト
                     set layout_arg --layout "$project_layout"
                 else if $is_git
+                    # Git用レイアウト
                     set layout_arg --layout "$HOME/.config/zellij/layouts/template_git.kdl"
                 else
+                    # 通常レイアウト
                     set layout_arg --layout "$HOME/.config/zellij/layouts/template_default.kdl"
                 end
             end
 
-            # --- 3. 起動ロジック (ここが重要) ---
-            # 実行中のセッション一覧を取得 (-nで名前のみ、-sでショート形式)
-            set -l active_sessions (zellij list-sessions -n -s 2>/dev/null)
-
-            # セッション名が完全一致で存在するか確認
-            if contains $session_name $active_sessions
-                # 存在する -> アタッチする
-                exec zellij attach $session_name
-            else
-                # 存在しない -> レイアウトを指定して新規作成する
-                # ($layout_arg が空ならデフォルトレイアウトになります)
-                exec zellij -n $session_name $layout_arg
-            end
+            # --- 3. 起動 ---
+            # ユーザー提示の構文: layout(オプション) を先に書き、その後に attach を呼ぶ
+            # layout_arg が空の場合は単に無視されます
+            exec zellij $layout_arg attach --create $session_name
         end
     end
 
