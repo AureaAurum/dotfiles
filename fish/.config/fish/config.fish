@@ -39,11 +39,27 @@ if status is-interactive
     end
 
     if status is-interactive
+        # Zellijの外、かつVSCodeのターミナルでない場合（VSCode内でも使いたい場合はこの行の条件を外してください）
         if not set -q ZELLIJ
-            # 既存セッションへのアタッチはせず、常に新規or名前指定で起動し、
-            # 抜けた（exitした）瞬間にそのシェルも閉じる
-            zellij
-            exit
+            
+            # 1. Gitリポジトリ内ならそのルートディレクトリのパスを取得
+            set -l repo_root (git rev-parse --show-toplevel 2>/dev/null)
+            
+            if test -n "$repo_root"
+                # Git管理下なら「リポジトリ名」をセッション名にする
+                set session_name (basename $repo_root)
+            else
+                # Git管理外なら「現在のフォルダ名」をセッション名にする
+                set session_name (basename $PWD)
+            end
+    
+            # 2. セッション名に使えない文字（.など）があれば置換しておく（念のため）
+            set session_name (string replace -a . _ $session_name)
+    
+            # 3. その名前でアタッチ（なければ作成）
+            # VSCode内で使う場合、execをつけると統合ターミナルを閉じた時の挙動が怪しくなることがあるので
+            # 挙動が変なら exec を外して試してください
+            exec zellij attach --create $session_name
         end
     end
 
