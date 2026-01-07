@@ -4,6 +4,8 @@ if status is-interactive
     # Disable default greeting
     set -U fish_greeting
 
+    set -gx EDITOR "nano"
+
     # --- Homebrew Setup (条件分岐でエラー回避) ---
     # Linuxbrewのディレクトリが存在する場合のみ読み込む
     if test -d /home/linuxbrew/.linuxbrew
