@@ -1,34 +1,30 @@
+set -gx EDITOR "nano"
+# --- Homebrew Setup (条件分岐でエラー回避) ---
+# Linuxbrewのディレクトリが存在する場合のみ読み込む
+if test -d /home/linuxbrew/.linuxbrew
+    eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+end
+# brewコマンドが使える状態になっている場合のみ、補完設定を読み込む
+if type -q brew
+    if test -d (brew --prefix)"/share/fish/vendor_completions.d"
+        set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+    end
+end
+# --- Tool Initialization ---
+# Initialize Mise (これを忘れると言語が動きません！)
+if type -q mise
+    if status is-interactive
+        mise activate fish | source
+    else
+        mise activate fish --shims | source
+    end
+end
+
 if status is-interactive
     # Commands to run in interactive sessions can go here
 
     # Disable default greeting
     set -U fish_greeting
-
-    set -gx EDITOR "nano"
-
-    # --- Homebrew Setup (条件分岐でエラー回避) ---
-    # Linuxbrewのディレクトリが存在する場合のみ読み込む
-    if test -d /home/linuxbrew/.linuxbrew
-        eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-    end
-
-    # brewコマンドが使える状態になっている場合のみ、補完設定を読み込む
-    if type -q brew
-        if test -d (brew --prefix)"/share/fish/vendor_completions.d"
-            set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
-        end
-    end
-
-    # --- Tool Initialization ---
-
-    # Initialize Mise (これを忘れると言語が動きません！)
-    if type -q mise
-        if status is-interactive
-            mise activate fish | source
-        else
-            mise activate fish --shims | source
-        end
-    end
 
     # Initialize Starship
     if type -q starship
@@ -172,5 +168,14 @@ if status is-interactive
     if functions -q fzf_configure_bindings
         # set up fzf key bindings
         fzf_configure_bindings --directory=\ct 2>/dev/null
+    end
+
+    function y
+	    set tmp (mktemp -t "yazi-cwd.XXXXXX")
+	    yazi $argv --cwd-file="$tmp"
+	    if set cwd (command cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
+	    	builtin cd -- "$cwd"
+	    end
+	    rm -f -- "$tmp"
     end
 end
