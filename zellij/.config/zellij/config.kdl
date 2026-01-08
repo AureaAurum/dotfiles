@@ -232,6 +232,11 @@ plugins {
     filepicker location="zellij:strider" {
         cwd "/"
     }
+    autolock location="file:~/.config/zellij/plugins/zellij-autolock.wasm" {
+        triggers "nvim|vim|nano|hx|fzf"
+        reaction_seconds "0.3"
+        is_enabled true
+    }
     configuration location="zellij:configuration"
     plugin-manager location="zellij:plugin-manager"
     about location="zellij:about"
@@ -241,6 +246,7 @@ plugins {
 load_plugins {
   // "file:/path/to/my-plugin.wasm"
   // "https://example.com/my-plugin.wasm"
+  file:~/.config/zellij/plugins/zellij-autolock.wasm
 }
 
 // Choose what to do when zellij receives SIGTERM, SIGINT, SIGQUIT or SIGHUP

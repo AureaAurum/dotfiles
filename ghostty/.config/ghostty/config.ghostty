@@ -6,3 +6,4 @@ copy-on-select = clipboard
 
 # Ctrl+V で貼り付け (Fish等のキーバインドより優先されます)
 keybind = ctrl+v=paste_from_clipboard
+mouse-bind = right=paste_from_clipboard
