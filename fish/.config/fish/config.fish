@@ -36,7 +36,7 @@ if status is-interactive
     if type -q zoxide
         zoxide init fish --cmd cd | source
     end
-
+    #echo "DEBUG: TERM_PROGRAM=$TERM_PROGRAM, ZELLIJ=$ZELLIJ, interactive=(status is-interactive)"
     if status is-interactive
         if not set -q ZELLIJ
             # --- 1. セッション名とディレクトリの決定 ---
@@ -79,9 +79,12 @@ if status is-interactive
             end
 
             # --- 3. 起動 ---
+            if zellij list-sessions | string match -q "$session_name (EXITED)"
+                zellij delete-session $session_name
+            end
             # ユーザー提示の構文: layout(オプション) を先に書き、その後に attach を呼ぶ
             # layout_arg が空の場合は単に無視されます
-            exec zellij $layout_arg attach --create $session_name
+            exec zellij $layout_arg attach --create $session_name -f
         end
     end
 
