@@ -1,0 +1,12 @@
+.git/
+
+.cache/
+
+.local/share/cargo
+.local/share/go
+.local/share/yarn
+
+node_modules/
+dist/
+out/
+.next/

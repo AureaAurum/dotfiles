@@ -15,7 +15,9 @@ layout {
             pane focus=true
             
             // 右：btm（全面）
-            pane command="btm" size="30%"
+            pane command="btm" size="30%" {
+                start_suspended false
+            }
         }
     }
 }

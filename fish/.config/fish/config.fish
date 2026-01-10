@@ -1,4 +1,5 @@
 set -gx EDITOR "nano"
+set -gx FD_DIRS_IGNORE ".cache" "node_modules" "target" "vendor" ".git"
 # --- Homebrew Setup (条件分岐でエラー回避) ---
 # Linuxbrewのディレクトリが存在する場合のみ読み込む
 if test -d /home/linuxbrew/.linuxbrew
