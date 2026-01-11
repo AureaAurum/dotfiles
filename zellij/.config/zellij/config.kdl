@@ -13,7 +13,7 @@ plugins {
         cwd "/"
     }
     autolock location="file:~/.config/zellij/plugins/zellij-autolock.wasm" {
-        triggers "nvim|vim|nano|hx|fzf"
+        triggers "nvim|vim|nano|micro|hx|fzf"
         reaction_seconds "0.3"
         is_enabled true
     }
@@ -89,7 +89,7 @@ keybinds {
         }
     }
     locked {
-        bind "Ctrl g" { 
+        bind "Ctrl g" {
             // Disable the autolock plugin.
             MessagePlugin "autolock" {payload "disable";};
             // Unlock Zellij.
