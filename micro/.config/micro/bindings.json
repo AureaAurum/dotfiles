@@ -1,0 +1,6 @@
+{
+    "Alt-/": "lua:comment.comment",
+    "CtrlUnderscore": "lua:comment.comment",
+    "Alt-g": "ToggleHelp",
+    "Ctrl-g": "None"
+}
