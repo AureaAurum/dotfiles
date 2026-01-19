@@ -56,4 +56,4 @@ copy-on-select = clipboard
 # Ctrl+V で貼り付け (Fish等のキーバインドより優先されます)
 keybind = ctrl+v=paste_from_clipboard
 right-click-action = context-menu
-shell-integration-features = ssh-terminfo,ssh-env
+shell-integration-features = ssh-env

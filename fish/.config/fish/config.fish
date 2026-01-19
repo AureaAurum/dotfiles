@@ -162,19 +162,4 @@ if status is-interactive
 	    rm -f -- "$tmp"
     end
 
-    function ssh
-        # そのまま実行するオプションのリスト（必要に応じて追加可能）
-        # -V: バージョン情報
-        # --help: ヘルプ（sshコマンド自体は正式には--helpを持たないことが多いですが、念のため）
-        set -l skip_opts -V --help -h
-
-        # 引数がない、または引数に除外オプションが含まれている場合は、そのまま実行
-        if test (count $argv) -eq 0; or contains -- $argv $skip_opts
-            /usr/bin/ssh $argv
-            return
-        end
-
-        # それ以外（通常の接続）ならGhosttyを起動
-        ghostty --quit-after-last-window-closed=true -e fish -c "/usr/bin/ssh $argv || read -P 'SSH Error! Press Enter to close...'" 2>&1 | rg -v "^(info|warning)" & disown
-    end
 end
