@@ -39,52 +39,54 @@ if status is-interactive
     #echo "DEBUG: TERM_PROGRAM=$TERM_PROGRAM, ZELLIJ=$ZELLIJ, interactive=(status is-interactive)"
     if status is-interactive
         if not set -q ZELLIJ
-            # --- 1. セッション名とディレクトリの決定 ---
-            set -l repo_root (git rev-parse --show-toplevel 2>/dev/null)
-            set -l session_name
-            set -l is_git false
+            if type -q zellij
+                # --- 1. セッション名とディレクトリの決定 ---
+                set -l repo_root (git rev-parse --show-toplevel 2>/dev/null)
+                set -l session_name
+                set -l is_git false
 
-            if test -n "$repo_root"
-                set session_name (basename $repo_root)
-                set is_git true
-            else
-                set session_name (basename $PWD)
-            end
-
-            # ドットやスペースをアンダースコアに置換
-            set session_name (string replace -a . _ $session_name)
-            set session_name (string replace -a " " _ $session_name)
-
-            # --- 2. VS Code判定とレイアウト設定 ---
-            # layout_arg をリストとして初期化
-            set -l layout_arg
-
-            if test "$TERM_PROGRAM" = "vscode"
-                # VS Codeの場合: 名前を変えて、レイアウト指定なし
-                set session_name "$session_name-vscode"
-            else
-                # Ghosttyなどの場合: レイアウトを設定
-                set -l project_layout "$HOME/.config/zellij/layouts/$session_name.kdl"
-
-                if test -f "$project_layout"
-                    # プロジェクト専用レイアウト
-                    set layout_arg --layout "$project_layout"
-                else if $is_git
-                    # Git用レイアウト
-                    set layout_arg --layout "$HOME/.config/zellij/layouts/template_git.kdl"
+                if test -n "$repo_root"
+                    set session_name (basename $repo_root)
+                    set is_git true
                 else
-                    # 通常レイアウト
-                    set layout_arg --layout "$HOME/.config/zellij/layouts/template_default.kdl"
+                    set session_name (basename $PWD)
                 end
-            end
 
-            # --- 3. 起動 ---
-            if zellij list-sessions | string match -q "$session_name (EXITED)"
-                zellij delete-session $session_name
+                # ドットやスペースをアンダースコアに置換
+                set session_name (string replace -a . _ $session_name)
+                set session_name (string replace -a " " _ $session_name)
+
+                # --- 2. VS Code判定とレイアウト設定 ---
+                # layout_arg をリストとして初期化
+                set -l layout_arg
+
+                if test "$TERM_PROGRAM" = "vscode"
+                    # VS Codeの場合: 名前を変えて、レイアウト指定なし
+                    set session_name "$session_name-vscode"
+                else
+                    # Ghosttyなどの場合: レイアウトを設定
+                    set -l project_layout "$HOME/.config/zellij/layouts/$session_name.kdl"
+
+                    if test -f "$project_layout"
+                        # プロジェクト専用レイアウト
+                        set layout_arg --layout "$project_layout"
+                    else if $is_git
+                        # Git用レイアウト
+                        set layout_arg --layout "$HOME/.config/zellij/layouts/template_git.kdl"
+                    else
+                        # 通常レイアウト
+                        set layout_arg --layout "$HOME/.config/zellij/layouts/template_default.kdl"
+                    end
+                end
+
+                # --- 3. 起動 ---
+                if zellij list-sessions | string match -q "$session_name (EXITED)"
+                    zellij delete-session $session_name
+                end
+                # ユーザー提示の構文: layout(オプション) を先に書き、その後に attach を呼ぶ
+                # layout_arg が空の場合は単に無視されます
+                exec zellij $layout_arg attach --create $session_name -f
             end
-            # ユーザー提示の構文: layout(オプション) を先に書き、その後に attach を呼ぶ
-            # layout_arg が空の場合は単に無視されます
-            exec zellij $layout_arg attach --create $session_name -f
         end
     end
 
