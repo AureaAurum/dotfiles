@@ -266,7 +266,7 @@ def --env y [...args] {
                 cd $cwd
             }
         }
-    } finally {
+    } catch {
         rm -f $tmp
     }
 }
