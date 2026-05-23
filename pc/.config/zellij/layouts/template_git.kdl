@@ -10,21 +10,17 @@ layout {
     }
 
     tab focus=true {
-        pane split_direction="vertical" {
-            // 左：メイン
-            pane focus=true
-            
-            // 右：30%の幅
-            pane split_direction="horizontal" size="30%" {
-                // 右上：lazygit
-                pane command="lazygit" {
+        pane split_direction="vertical" {            
+                // 左：メイン
+                pane command="lazygit" focus=true {
                 start_suspended false
             }
                 // 右下：btm（50%の高さ）
-                pane command="btm" size="50%" {
+                pane command="btm" size="25%" {
+                args "-b"
                 start_suspended false
             }
-            }
+
         }
     }
 }
