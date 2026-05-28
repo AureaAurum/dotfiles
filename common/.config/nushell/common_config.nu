@@ -36,7 +36,7 @@ let dark_theme = {
     shape_directory: cyan
     shape_external: red
     shape_externalarg: white
-    shape_external_resolved: light_yellow_bold
+    shape_external_resolved: green_bold
     shape_filepath: cyan
     shape_flag: blue_bold
     shape_float: purple_bold
