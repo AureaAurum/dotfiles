@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "data": {
+    "7zip": {
+      "version": "26.01",
+      "gitref": "refs/tags/26.01",
+      "revision": "8c63d71ff886bda90c86db28466287f977374237"
+    }
+  }
+}

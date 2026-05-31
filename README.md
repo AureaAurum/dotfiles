@@ -3,12 +3,12 @@
 Configuration files for my Unix environments (WSL2, RPi, OCI).
 Managed by Ansible (Hybrid setup: Apt for system, Homebrew for tools).
 
-## 🛠 Modern Unix Tools & Aliases
+## 🛠 Modern Unix Tools & Abbreviations
 
 We use modern replacements for classic Unix commands to enhance productivity.
-**Note**: Aliases are guarded by `if [[ -o interactive ]]` to ensure AI/Scripts see standard behavior.
+**Note**: We use Nushell abbreviations instead of traditional aliases, which expand inline when you press space or enter. This ensures clarity and avoids issues with AI or scripts.
 
-| Command | Replacement | Alias | Description |
+| Command | Replacement | Abbreviation | Description |
 | :--- | :--- | :--- | :--- |
 | `ls` | **eza** | `ls` | Modern listing with icons, git status, and headers. |
 | `cat` | **bat** | `cat` | Syntax highlighting and git integration for file reading. |
@@ -18,47 +18,48 @@ We use modern replacements for classic Unix commands to enhance productivity.
 | `grep` | **ripgrep** | `grep` | Extremely fast search tool (recursively searches files). |
 | `find` | **fd** | `find` | User-friendly alternative to find. |
 
-### 💡 Alias Details per Command
+### 💡 Abbreviation Details per Command
 
 #### 1. `ls` -> `eza`
-- **Alias**: `alias ls='eza -h --icons --git'`
-- **Extra Aliases**:
-    - `ll`: `eza -lh --icons --git` (Long list, no hidden files)
-    - `lt`: `eza --tree --level=2 --icons` (Tree view)
-- **Usage**: Just run `ls` or `ll`. It shows file icons and git status usage automatically.
+- **Abbreviation**: `ls` -> `eza --icons --git`
+- **Extra Abbreviations**:
+    - `ll`: `eza -l --icons --git` (Long list)
+    - `la`: `eza -la --icons --git` (Long list, all files)
+    - `lt`: `eza --tree --level=2 --icons --git` (Tree view)
+- **Usage**: Type `ls`, `ll`, `la`, or `lt` and press space/enter to expand. It shows file icons and git status usage automatically.
 
 #### 2. `cat` -> `bat`
-- **Alias**: `alias cat='bat'`
+- **Abbreviation**: `cat` -> `bat`
 - **Usage**: `cat filename.py`
 - **Features**: Syntax highlighting, line numbers, and git integration (shows added/modified lines).
 
 #### 3. `ps` -> `procs`
-- **Alias**: `alias ps='procs'`
+- **Abbreviation**: `ps` -> `procs`
 - **Usage**: `ps`
 - **Features**: Human-readable output, shows Docker container names, highlights PID/User.
 
 #### 4. `du` -> `dust`
-- **Alias**: `alias du='dust'`
+- **Abbreviation**: `du` -> `dust`
 - **Usage**: `du` (Wait a moment for calculation)
 - **Features**: Graphical bar chart of directory sizes. Ascends from smallest to largest.
 
 #### 5. `df` -> `duf`
-- **Alias**: `alias df='duf'`
+- **Abbreviation**: `df` -> `duf`
 - **Usage**: `df`
 - **Features**: Colorful table showing mount points, types, and usage.
 
 #### 6. `grep` -> `rg` (ripgrep)
-- **Alias**: `alias grep='rg'`
+- **Abbreviation**: `grep` -> `rg -i`
 - **Usage**: `grep "search_term"`
 - **Features**: Ignores `.git` and `.gitignore` files by default. Very fast.
 
 #### 7. `find` -> `fd`
-- **Alias**: `alias find='fd'`
+- **Abbreviation**: `find` -> `fd`
 - **Usage**: `find pattern` (No need for `-name`)
 - **Features**: Simple syntax, ignores git files, colored output.
 
 ## 🚀 Deployment
-This repository is deployed via Ansible.
-- **Local**: Edited directly.
+This repository is deployed via Stow and Ansible.
+- **Local**: Deployed via `stow` (e.g., `stow common pc`).
 - **Remote (Pi/OCI)**: `ansible-playbook site.yml --tags dotfiles` triggers a `git pull`.
 

@@ -1,0 +1,3 @@
+[commands]
+# topgrade実行時に7-Zipの上流アップデートを確認する
+"Check Upstream 7-Zip" = "nvchecker -c ~/.config/nvchecker/7zip.toml ; nvcmp -c ~/.config/nvchecker/7zip.toml"

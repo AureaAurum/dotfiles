@@ -64,6 +64,7 @@ themes {
 theme "gruvbox-dark"
 
 
+
 web_client {
     font "monospace"
 }
@@ -109,7 +110,7 @@ keybinds {
         bind "z" { TogglePaneFrames; SwitchToMode "Normal"; }
         bind "w" { ToggleFloatingPanes; SwitchToMode "Normal"; }
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
-        bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
+        bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0; }
         bind "i" { TogglePanePinned; SwitchToMode "Normal"; }
     }
     move {
@@ -192,35 +193,35 @@ keybinds {
             LaunchOrFocusPlugin "session-manager" {
                 floating true
                 move_to_focused_tab true
-            };
+            }
             SwitchToMode "Normal"
         }
         bind "c" {
             LaunchOrFocusPlugin "configuration" {
                 floating true
                 move_to_focused_tab true
-            };
+            }
             SwitchToMode "Normal"
         }
         bind "p" {
             LaunchOrFocusPlugin "plugin-manager" {
                 floating true
                 move_to_focused_tab true
-            };
+            }
             SwitchToMode "Normal"
         }
         bind "a" {
             LaunchOrFocusPlugin "zellij:about" {
                 floating true
                 move_to_focused_tab true
-            };
+            }
             SwitchToMode "Normal"
         }
         bind "s" {
             LaunchOrFocusPlugin "zellij:share" {
                 floating true
                 move_to_focused_tab true
-            };
+            }
             SwitchToMode "Normal"
         }
     }

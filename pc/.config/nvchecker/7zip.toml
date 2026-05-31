@@ -1,0 +1,7 @@
+[__config__]
+oldver = "7zip_old.json"
+newver = "7zip_new.json"
+
+[7zip]
+source = "git"
+git = "https://github.com/ip7z/7zip.git"
