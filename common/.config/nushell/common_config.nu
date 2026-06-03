@@ -65,27 +65,41 @@ let dark_theme = {
     shape_vardecl: purple
 }
 
+# 1. Carapaceコンプリータの定義
 let carapace_completer = {|spans: list<string>|
     CARAPACE_LENIENT=1 carapace $spans.0 nushell ...$spans | from json
 }
 
-# This completer will use carapace by default
-let external_completer = {|spans|
-    let expanded_alias = scope aliases
-    | where name == $spans.0
-    | get -o 0.expansion
-
-    let spans = if $expanded_alias != null {
-        $spans
-        | skip 1
-        | prepend ($expanded_alias | split row ' ' | take 1)
-    } else {
-        $spans
+# 2. fishコンプリータの定義
+let fish_completer = {|spans: list<string>|
+    fish --command $"complete '--do-complete=($spans | str replace --all "'" "\\'" | str join ' ')'"
+    | from tsv --flexible --noheaders --no-infer
+    | rename value description
+    | update value {|row|
+        let value = $row.value
+        let need_quote = ['\ ', ' ', '[', ']', '(', ')', '{', '}', '\t', "'", '"', '`'] | any {$in in $value}
+        if $need_quote {
+            $value | str replace --all r#'\'# r#'\\'# | $'"($in)"'
+        } else {
+            $value
+        }
     }
+}
 
-    match $spans.0 {
-        _ => $carapace_completer
-    } | do $in $spans
+# 3. 動的フォールバック・メタコンプリータ
+let external_completer = {|spans|
+    # まずCarapaceで補完を試みる
+    let carapace_res = (do $carapace_completer $spans)
+
+    # Carapaceの結果が空、またはnullならfish completerにフォールバック
+    if ($carapace_res | is-empty) {
+        let fish_res = (do $fish_completer $spans)
+        
+        # fishの結果すら空なら、Nushell標準のファイル・標準補完に譲る(nullを返す)
+        if ($fish_res | is-empty) { null } else { $fish_res }
+    } else {
+        $carapace_res
+    }
 }
 
 
@@ -140,9 +154,10 @@ $env.config = {
         case_sensitive: false # set to true to enable case-sensitive completions
         quick: true    # set this to false to prevent auto-selecting completions when only one remains
         partial: true    # set this to false to prevent partial filling of the prompt
-        algorithm: "prefix"    # prefix or fuzzy
+        algorithm: "fuzzy"    # prefix or fuzzy
         external: {
             enable: true
+            max_results: 100 # the maximum number of results to return from an external completer, this is to prevent performance issues with completions that return a large number of results
             completer: $external_completer
         }
     }
