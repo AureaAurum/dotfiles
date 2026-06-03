@@ -157,7 +157,7 @@ $env.config = {
         algorithm: "fuzzy"    # prefix or fuzzy
         external: {
             enable: true
-            max_results: 100 # the maximum number of results to return from an external completer, this is to prevent performance issues with completions that return a large number of results
+            max_results: 50 # the maximum number of results to return from an external completer, this is to prevent performance issues with completions that return a large number of results
             completer: $external_completer
         }
     }
