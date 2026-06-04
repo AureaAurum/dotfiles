@@ -154,7 +154,7 @@ $env.config = {
         case_sensitive: false # set to true to enable case-sensitive completions
         quick: true    # set this to false to prevent auto-selecting completions when only one remains
         partial: true    # set this to false to prevent partial filling of the prompt
-        algorithm: "fuzzy"    # prefix or fuzzy
+        algorithm: "prefix"    # prefix or fuzzy
         external: {
             enable: true
             max_results: 50 # the maximum number of results to return from an external completer, this is to prevent performance issues with completions that return a large number of results
@@ -237,13 +237,23 @@ $env.config = {
         let before_cursor = ($buffer | str substring 0..$position)
         let current_word = ($before_cursor | split row ' ' | last)
   
-        let match = $abbreviations | columns | where $it == $current_word
+        # Only expand abbreviations when the current word is at the start of the line.
+        # This avoids expanding later words like `ps` in `docker ps`.
+        let word_len = ($current_word | str length | into int)
+        let before_word_start = ($position - $word_len)
+        let before_word = if $before_word_start > 0 {
+          ($buffer | str substring 0..<$before_word_start)
+        } else {
+          ''
+        }
+        let is_line_start = ($before_word | str trim) == ''
+
+        let match = if $is_line_start { $abbreviations | columns | where $it == $current_word } else { [] }
         if ($match | is-empty) {
           { value: $buffer }
         } else {
           # Replace only the current word, preserve rest of buffer
           let replacement = ($abbreviations | get $match.0)
-          let word_len = ($current_word | str length | into int)
           let before_word_end = ($position - $word_len)
           let before_word = if $before_word_end > 0 {
             ($buffer | str substring 0..<$before_word_end)
