@@ -1,2 +1,2 @@
 [misc]
-disable = ["go","node"]
+disable = ["go","node","pnpm"]
