@@ -1,4 +1,3 @@
 .vscode*
-*/.config/micro/backups/*
-*/.config/micro/buffers/*
-common/.config/micro/buffers/history
+*/.config/micro/backups*
+*/.config/micro/buffers*
