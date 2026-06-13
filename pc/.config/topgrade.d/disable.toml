@@ -1,2 +1,6 @@
 [misc]
 disable = ["go","node","pnpm"]
+
+[containers]
+# Ignore local Docker images that do not exist in a remote registry
+ignored_containers = ["open-webui-gpt-researcher*"]

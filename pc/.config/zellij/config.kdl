@@ -7,7 +7,7 @@ plugins {
     compact-bar location="zellij:compact-bar"
     session-manager location="zellij:session-manager"
     welcome-screen location="zellij:session-manager" {
-        welcome_screen true
+        welcome_screen false
     }
     filepicker location="zellij:strider" {
         cwd "/"
@@ -30,6 +30,9 @@ load_plugins {
 //   - false
 //
 session_serialization false
+
+copy_command "wl-copy"                    // wayland
+
 
 themes {
      dracula {
