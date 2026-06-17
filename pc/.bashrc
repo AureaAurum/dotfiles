@@ -22,3 +22,6 @@ fi
 
 # Added by Antigravity CLI installer
 export PATH="/home/aurea/.local/bin:$PATH"
+
+# for mise
+eval "$(mise activate bash)"
