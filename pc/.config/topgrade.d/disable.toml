@@ -1,5 +1,5 @@
 [misc]
-disable = ["go","node","pnpm"]
+disable = ["go","node","pnpm","cargo"]
 
 [containers]
 # Ignore local Docker images that do not exist in a remote registry

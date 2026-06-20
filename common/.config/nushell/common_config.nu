@@ -237,7 +237,7 @@ $env.config = {
         let before_cursor = ($buffer | str substring 0..$position)
         let current_word = ($before_cursor | split row ' ' | last)
   
-        # Only expand abbreviations when the current word is at the start of the line.
+        # Expand abbreviations at command starts: line start, or after a pipe/semicolon.
         # This avoids expanding later words like `ps` in `docker ps`.
         let word_len = ($current_word | str length | into int)
         let before_word_start = ($position - $word_len)
@@ -246,9 +246,14 @@ $env.config = {
         } else {
           ''
         }
-        let is_line_start = ($before_word | str trim) == ''
+        let before_word_trimmed = ($before_word | str trim)
+        let is_command_start = if $before_word_trimmed == '' {
+          true
+        } else {
+          (($before_word_trimmed | split chars | last) in ['|' ';'])
+        }
 
-        let match = if $is_line_start { $abbreviations | columns | where $it == $current_word } else { [] }
+        let match = if $is_command_start { $abbreviations | columns | where $it == $current_word } else { [] }
         if ($match | is-empty) {
           { value: $buffer }
         } else {
