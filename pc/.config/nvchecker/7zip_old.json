@@ -3,8 +3,7 @@
   "data": {
     "7zip": {
       "version": "26.01",
-      "gitref": "refs/tags/26.01",
-      "revision": "8c63d71ff886bda90c86db28466287f977374237"
+      "url": "https://archlinux.org/packages/extra/x86_64/7zip/"
     }
   }
 }
