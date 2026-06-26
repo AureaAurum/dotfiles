@@ -118,7 +118,7 @@ let abbreviations = {
  ls: 'eza --icons'
  ll: 'eza -l --icons'
  la: 'eza -la --icons'
- lt: 'eza --tree --level=2 --icons'
+ lt: 'eza --tree --icons --level=2'
 
 }
 
