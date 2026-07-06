@@ -2,7 +2,7 @@
   "version": 2,
   "data": {
     "7zip": {
-      "version": "26.01",
+      "version": "26.02",
       "url": "https://archlinux.org/packages/extra/x86_64/7zip/"
     }
   }
