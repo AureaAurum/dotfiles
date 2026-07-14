@@ -115,9 +115,9 @@ let abbreviations = {
  find: 'fd'
 
 # Standard ls overrides
- ls: 'eza --icons'
- ll: 'eza -l --icons'
- la: 'eza -la --icons'
+ ls: 'eza --icons always'
+ ll: 'eza --icons -l'
+ la: 'eza --icons -la'
  lt: 'eza --icons --tree --level=2'
 
 }
