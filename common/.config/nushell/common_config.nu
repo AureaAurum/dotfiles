@@ -103,29 +103,21 @@ let external_completer = {|spans|
 }
 
 
-let abbreviations = {
-# Aliases - Replacing standard tools with modern alternatives if available
-# Note: In Nushell, aliases are defined at parse time. 
-# We use custom commands (def) to allow for conditional logic or just define them.
- cat: 'bat'
- ps: 'procs'
- du: 'dust'
- df: 'duf'
- grep: 'rg -i'
- find: 'fd'
-
-# Standard ls overrides
- ls: 'eza --icons always'
- ll: 'eza --icons -l'
- la: 'eza --icons -la'
- lt: 'eza --icons --tree --level=2'
-
-}
-
-
 # The default config record. This is where much of your global configuration is setup.
 $env.config = {
     show_banner: false # true or false to enable or disable the welcome banner at startup
+    abbreviations: {
+        cat: 'bat'
+        ps: 'procs'
+        du: 'dust'
+        df: 'duf'
+        grep: 'rg -i'
+        find: 'fd'
+        ls: 'eza --icons always'
+        ll: 'eza --icons -l'
+        la: 'eza --icons -la'
+        lt: 'eza --icons --tree --level=2'
+    }
     table: {
         mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
         index_mode: auto # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
@@ -180,101 +172,12 @@ $env.config = {
     highlight_resolved_externals: true # true enables highlighting of external commands in the repl resolved by which.
 
   keybindings: [
-    {
-      name: abbr_menu
-      modifier: none
-      keycode: enter
-      mode: [emacs, vi_normal, vi_insert]
-      event: [
-          { send: menu name: abbr_menu }
-          { send: enter }
-      ]
-    }
-    {
-      name: accept_abbr
-      modifier: control
-      keycode: char_y
-      mode: [emacs, vi_normal, vi_insert]
-      event: [
-        { send: HistoryHintComplete }]
-    }
-    {
-      name: abbr_menu
-      modifier: none
-      keycode: space
-      mode: [emacs, vi_normal, vi_insert]
-      event: [
-          { send: menu name: abbr_menu }
-          { edit: insertchar value: ' '}
-      ]
-    }
-    # End fish
   ]
   cursor_shape: {
     vi_insert: line
     vi_normal: block
     emacs: line
   }
-  menus: [
-    # Menu for fish like abbreviations
-    {
-      name: abbr_menu
-      only_buffer_difference: false
-      marker: none
-      type: {
-        layout: columnar
-        columns: 1
-        col_width: 20
-        col_padding: 2
-      }
-      style: {
-        text: green
-        selected_text: green_reverse
-        description_text: yellow
-      }
-      source: { |buffer, position|
-        # Extract the current word before the cursor
-        let before_cursor = ($buffer | str substring 0..$position)
-        let current_word = ($before_cursor | split row ' ' | last)
-  
-        # Expand abbreviations at command starts: line start, or after a pipe/semicolon.
-        # This avoids expanding later words like `ps` in `docker ps`.
-        let word_len = ($current_word | str length | into int)
-        let before_word_start = ($position - $word_len)
-        let before_word = if $before_word_start > 0 {
-          ($buffer | str substring 0..<$before_word_start)
-        } else {
-          ''
-        }
-        let before_word_trimmed = ($before_word | str trim)
-        let is_command_start = if $before_word_trimmed == '' {
-          true
-        } else {
-          (($before_word_trimmed | split chars | last) in ['|' ';'])
-        }
-
-        let match = if $is_command_start { $abbreviations | columns | where $it == $current_word } else { [] }
-        if ($match | is-empty) {
-          { value: $buffer }
-        } else {
-          # Replace only the current word, preserve rest of buffer
-          let replacement = ($abbreviations | get $match.0)
-          let before_word_end = ($position - $word_len)
-          let before_word = if $before_word_end > 0 {
-            ($buffer | str substring 0..<$before_word_end)
-          } else {
-            ''
-          }
-          let after_cursor = ($buffer | str substring $position..)
-          { value: ($before_word ++ $replacement ++ $after_cursor) }
-        }
-      }
-    }
-  ]
-
-
-
-
 }
 
 # Source generated configs from env.nu
