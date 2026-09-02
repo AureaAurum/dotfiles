@@ -103,9 +103,9 @@ let external_completer = {|spans|
 }
 
 
-# The default config record. This is where much of your global configuration is setup.
+# Custom configuration; omitted values use Nushell defaults.
 $env.config = {
-    show_banner: false # true or false to enable or disable the welcome banner at startup
+    show_banner: false
     abbreviations: {
         cat: 'bat'
         ps: 'procs'
@@ -118,65 +118,59 @@ $env.config = {
         la: 'eza --icons -la'
         lt: 'eza --icons --tree --level=2'
     }
-    table: {
-        mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
-        index_mode: auto # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
-        show_empty: true # show 'empty list' and 'empty record' placeholders for command output
-        padding: { left: 1, right: 1 } # a left right padding of each column in a table
-        trim: {
-            methodology: wrapping # wrapping or truncating
-            wrapping_try_keep_words: true # A strategy used by the 'wrapping' methodology
-            truncating_suffix: "..." # A suffix used by the 'truncating' methodology
-        }
-        header_on_separator: false # show header text on separator/border line
-        # abbreviated_row_count: 10 # limit data rows from top and bottom after reaching a set point
-    }
+    table: { index_mode: auto }
 
-    error_style: "fancy" # "fancy" or "plain" for screen reader-friendly error messages
-
-    # datetime_format determines what a datetime rendered in the shell would look like.
-    # Behavior without this configuration point will be to "humanize" the datetime display,
-    # showing something like "a day ago."
     datetime_format: {
-         normal: '%a, %d %b %Y %H:%M:%S %z'    # shows up in displays of variables or other datetime's outside of tables
-         table: '%m/%d/%y %I:%M:%S%p'          # generally shows up in tabular outputs such as ls. commenting this out will change it to the default human readable datetime format
+        normal: '%a, %d %b %Y %H:%M:%S %z'
+        table: '%m/%d/%y %I:%M:%S%p'
     }
 
     completions: {
-        case_sensitive: false # set to true to enable case-sensitive completions
-        quick: true    # set this to false to prevent auto-selecting completions when only one remains
-        partial: true    # set this to false to prevent partial filling of the prompt
-        algorithm: "prefix"    # prefix or fuzzy
         external: {
-            enable: true
-            max_results: 50 # the maximum number of results to return from an external completer, this is to prevent performance issues with completions that return a large number of results
+            max_results: 50
             completer: $external_completer
         }
     }
 
-    # filesize: {
-    #    metric: false # true => KB, MB, GB (ISO standard), false => KiB, MiB, GiB (Windows standard)
-    #    format: "auto" # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, auto
-    #}
-
-    color_config: $dark_theme # if you want a more interesting theme, you can replace the empty record with `$dark_theme`, `$light_theme` or another custom record
-    # use_grid_icons: true
-    # footer_mode: "25" # always, never, number_of_rows, auto
-    float_precision: 2 # the precision for displaying floats in tables
-    buffer_editor: "" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
+    color_config: $dark_theme
     use_ansi_coloring: true
-    bracketed_paste: true # enable bracketed paste, currently useless on windows
-    edit_mode: emacs # emacs, vi
-    render_right_prompt_on_last_line: true # true or false to enable or disable right prompt to be rendered on last line of the prompt.
-    use_kitty_protocol: true # enables keyboard enhancement protocol implemented by kitty console, only if your terminal support this.
-    highlight_resolved_externals: true # true enables highlighting of external commands in the repl resolved by which.
+    render_right_prompt_on_last_line: true
+    use_kitty_protocol: true
+    highlight_resolved_externals: true
 
-  cursor_shape: {
-    vi_insert: line
-    vi_normal: block
-    emacs: line
-  }
+    cursor_shape: {
+        vi_insert: line
+        vi_normal: block
+        emacs: line
+    }
 }
+
+$env.config.keybindings ++=  [
+        {
+        name: completion_menu_ctrl_t
+        modifier: control
+        keycode: char_t
+        mode: [vi_insert vi_normal emacs]
+        event: {
+            until: [
+                { send: menu name: completion_menu }
+                { send: menupagenext }
+            ]
+        }
+    }
+    {
+        name: history_menu_ctrl_y
+        modifier: control
+        keycode: char_y
+        mode: [vi_insert vi_normal emacs]
+        event: {
+            until: [
+                { send: menu name: history_menu }
+                { send: menupagenext }
+            ]
+        }
+    }
+  ]
 
 # Source generated configs from env.nu
 source ~/.cache/nushell/mise.nu
