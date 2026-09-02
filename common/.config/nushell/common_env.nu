@@ -43,7 +43,7 @@ if not (which starship | is-empty) {
 
 # Navi
 if not (which navi | is-empty) {
-    ^navi widget nushell | save -f ($cache_dir | path join "navi.nu")
+    ^navi widget nushell| str replace 'modifier: control,' 'modifier: alt,'| save -f ($cache_dir | path join "navi.nu")
 } else {
     "" | save -f ($cache_dir | path join "navi.nu")
 }
