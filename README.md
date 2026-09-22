@@ -63,3 +63,18 @@ This repository is deployed via Stow and Ansible.
 - **Local**: Deployed via `stow` (e.g., `stow common pc`).
 - **Remote (Pi/OCI)**: `ansible-playbook site.yml --tags dotfiles` triggers a `git pull`.
 
+
+## Terminals and server sessions
+
+- PC: WezTerm starts Nushell with `btm -b` in the right 25% of each new window.
+  This also applies to windows opened with an explicit command. New tabs use the normal shell;
+  reloading the configuration does not add another monitor pane.
+  Appearance and paste bindings follow the Foot configuration. No local Zellij auto-start.
+- Servers: Ansible installs Zellij and Fish via Homebrew. After SSH login, run
+  `zellij attach --create main`. Detach with `Ctrl+o`, then `d`; attach again with
+  the same command. SSH disconnection leaves the session running, but quitting
+  Zellij or rebooting does not restore it (`session_serialization false`).
+- Git is authoritative for server dotfiles; do not edit deployed files on servers.
+  Commit and push changes before running Ansible, which checks out `main` and
+  deploys `common server` with Stow. `--tags dotfiles` does not install packages;
+  use `--tags modern_unix` when adding tools.
