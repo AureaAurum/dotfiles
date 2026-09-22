@@ -14,6 +14,20 @@ config.colors = {
 }
 config.keys = {
   { key = 'v', mods = 'CTRL', action = wezterm.action.PasteFrom 'Clipboard' },
+  {
+    key = 'n',
+    mods = 'ALT',
+    action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
+  },
+  {
+    key = 'x',
+    mods = 'ALT',
+    action = wezterm.action.CloseCurrentPane { confirm = false },
+  },
+  { key = 'LeftArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left' },
+  { key = 'RightArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right' },
+  { key = 'UpArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up' },
+  { key = 'DownArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down' },
 }
 config.mouse_bindings = {
   { event = { Down = { streak = 1, button = 'Right' } }, mods = 'NONE',
@@ -27,7 +41,7 @@ wezterm.on('window-config-reloaded', function(window, pane)
   wezterm.GLOBAL[key] = true
   -- Leave existing multi-pane layouts alone when this config is first loaded.
   if #pane:tab():panes() ~= 1 then return end
-  pane:split { direction = 'Right', size = 0.25, args = { 'btm', '-b' } }
+  pane:split { direction = 'Right', size = 0.2, args = { 'btm', '-b' } }
   pane:activate()
 end)
 
