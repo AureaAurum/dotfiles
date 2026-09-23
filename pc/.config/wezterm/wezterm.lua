@@ -168,6 +168,17 @@ config.keys = {
     mods = 'CTRL|SHIFT',
     action = act.ActivateCommandPalette,
   },
+
+  -- Passthrough mode (Bypass all WezTerm keys except toggle key)
+  {
+    key = 'z',
+    mods = 'CTRL|SHIFT',
+    action = act.ActivateKeyTable {
+      name = 'passthrough_mode',
+      one_shot = false,
+      replace_current = true,
+    },
+  },
 }
 
 -- ============================================================
@@ -349,6 +360,33 @@ config.key_tables = {
       action = act.PopKeyTable,
     },
   },
+
+  -- ----------------------------------------------------------
+  -- Passthrough mode
+  -- Ctrl+Shift+z (or auto on ssh / micro)
+  -- ----------------------------------------------------------
+  passthrough_mode = (function()
+    local t = {
+      {
+        key = 'z',
+        mods = 'CTRL|SHIFT',
+        action = act.ClearKeyTableStack,
+      },
+    }
+    for _, b in ipairs(config.keys) do
+      if not (b.key == 'z' and b.mods == 'CTRL|SHIFT') then
+        table.insert(t, {
+          key = b.key,
+          mods = b.mods,
+          action = act.SendKey {
+            key = b.key,
+            mods = b.mods,
+          },
+        })
+      end
+    end
+    return t
+  end)(),
 }
 
 -- ============================================================
@@ -391,6 +429,7 @@ local mode_configs = {
       { key = 'Ctrl+Shift+x', desc = 'Select' },
       { key = 'Ctrl+Shift+f', desc = 'Search' },
       { key = 'Ctrl+Shift+p', desc = 'Palette' },
+      { key = 'Ctrl+Shift+z', desc = 'Pass' },
     },
   },
 
@@ -441,6 +480,14 @@ local mode_configs = {
       { key = 'Esc', desc = 'Normal' },
     },
   },
+
+  passthrough_mode = {
+    badge = ' PASSTHROUGH ',
+    badge_bg = '#ea6962', -- Red
+    keys = {
+      { key = 'Ctrl+Shift+z', desc = 'Normal' },
+    },
+  },
 }
 
 local function build_status_hint(conf)
@@ -486,9 +533,48 @@ for name, conf in pairs(mode_configs) do
   cached_hints[name] = build_status_hint(conf)
 end
 
-wezterm.on('update-status', function(window, pane)
-  local mode = window:active_key_table()
+local pane_proc_was_target = {}
 
+local function is_passthrough_process(pane)
+  local success, name = pcall(function()
+    return pane:get_foreground_process_name()
+  end)
+  if not success or not name then
+    return false
+  end
+  local basename = name:gsub('^.*/', ''):gsub('%.exe$', '')
+  return basename == 'ssh' or basename == 'micro'
+end
+
+wezterm.on('update-status', function(window, pane)
+  local pane_id = pane:pane_id()
+  local is_target = is_passthrough_process(pane)
+  local was_target = pane_proc_was_target[pane_id] or false
+  pane_proc_was_target[pane_id] = is_target
+
+  -- 1. プロセスが通常から ssh / micro に切り替わった瞬間
+  if is_target and not was_target then
+    -- 他の操作モード（tab_mode, pane_mode 等）中でなければパススルーにする
+    if window:active_key_table() == nil or window:active_key_table() == 'passthrough_mode' then
+      window:perform_action(
+        act.ActivateKeyTable {
+          name = 'passthrough_mode',
+          one_shot = false,
+          replace_current = true,
+        },
+        pane
+      )
+    end
+
+  -- 2. プロセスが ssh / micro から通常（シェル）に戻った瞬間
+  elseif not is_target and was_target then
+    -- パススルーモードであれば確実に全スタックをクリアして通常モードへ復帰
+    if window:active_key_table() == 'passthrough_mode' then
+      window:perform_action(act.ClearKeyTableStack, pane)
+    end
+  end
+
+  local mode = window:active_key_table()
   if mode ~= nil and cached_hints[mode] ~= nil then
     window:set_right_status(cached_hints[mode])
   else
