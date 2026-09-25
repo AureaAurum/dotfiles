@@ -1,0 +1,2 @@
+// Keep running sessions across SSH disconnects; no resurrection after exit.
+session_serialization false
