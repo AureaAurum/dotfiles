@@ -6,7 +6,9 @@ keybinds {
     normal {
         bind "Ctrl Shift p" { SwitchToMode "Session"; }
     }
-    session {
+    // Reuse Session as the extra-mode selector.
+    session clear-defaults=true {
+        bind "Esc" "Enter" { SwitchToMode "Normal"; }
         bind "r" { SwitchToMode "Resize"; }
         bind "m" { SwitchToMode "Move"; }
         bind "s" { SwitchToMode "Scroll"; }
