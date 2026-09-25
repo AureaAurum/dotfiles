@@ -375,13 +375,15 @@ config.key_tables = {
     }
     for _, b in ipairs(config.keys) do
       if not (b.key == 'z' and b.mods == 'CTRL|SHIFT') then
+        local action = act.SendKey { key = b.key, mods = b.mods }
+        if b.key == 'p' and b.mods == 'CTRL|SHIFT' then
+          -- CSI-u preserves Shift when SSH has not negotiated extended keyboard input.
+          action = act.SendString '\x1b[112;6u'
+        end
         table.insert(t, {
           key = b.key,
           mods = b.mods,
-          action = act.SendKey {
-            key = b.key,
-            mods = b.mods,
-          },
+          action = action,
         })
       end
     end
