@@ -1,16 +1,2 @@
 // Keep running sessions across SSH disconnects; no resurrection after exit.
 session_serialization false
-
-keybinds {
-    unbind "Ctrl h" "Ctrl n" "Ctrl s" "Ctrl o" "Ctrl b" "Ctrl q"
-    normal {
-        bind "Ctrl Shift p" { SwitchToMode "Session"; }
-    }
-    session {
-        bind "r" { SwitchToMode "Resize"; }
-        bind "m" { SwitchToMode "Move"; }
-        bind "s" { SwitchToMode "Scroll"; }
-        bind "b" { SwitchToMode "Tmux"; }
-        bind "q" { Quit; }
-    }
-}

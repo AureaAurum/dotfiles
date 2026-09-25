@@ -375,15 +375,13 @@ config.key_tables = {
     }
     for _, b in ipairs(config.keys) do
       if not (b.key == 'z' and b.mods == 'CTRL|SHIFT') then
-        local action = act.SendKey { key = b.key, mods = b.mods }
-        if b.key == 'p' and b.mods == 'CTRL|SHIFT' then
-          -- CSI-u preserves Shift when SSH has not negotiated extended keyboard input.
-          action = act.SendString '\x1b[112;6u'
-        end
         table.insert(t, {
           key = b.key,
           mods = b.mods,
-          action = action,
+          action = act.SendKey {
+            key = b.key,
+            mods = b.mods,
+          },
         })
       end
     end
@@ -490,6 +488,30 @@ local mode_configs = {
       { key = 'Ctrl+Shift+z', desc = 'Normal' },
     },
   },
+
+  ssh_zellij = {
+    badge = ' ZELLIJ ',
+    badge_bg = '#7daea3', -- Blue
+    keys = {
+      { key = 'Ctrl+g', desc = 'Lock' },
+      { key = 'Ctrl+p', desc = 'Pane' },
+      { key = 'Ctrl+t', desc = 'Tab' },
+      { key = 'Ctrl+o', desc = 'Session' },
+      { key = 'Ctrl+Shift+z', desc = 'WezTerm' },
+    },
+  },
+
+  ssh_micro = {
+    badge = ' MICRO ',
+    badge_bg = '#d3869b', -- Purple
+    keys = {
+      { key = 'Ctrl+s', desc = 'Save' },
+      { key = 'Ctrl+q', desc = 'Quit' },
+      { key = 'Ctrl+f', desc = 'Find' },
+      { key = 'Ctrl+e', desc = 'Command' },
+      { key = 'Ctrl+Shift+z', desc = 'WezTerm' },
+    },
+  },
 }
 
 local function build_status_hint(conf)
@@ -542,15 +564,15 @@ local function is_passthrough_process(pane)
     return pane:get_foreground_process_name()
   end)
   if not success or not name then
-    return false
+    return false, nil
   end
   local basename = name:gsub('^.*/', ''):gsub('%.exe$', '')
-  return basename == 'ssh' or basename == 'micro'
+  return basename == 'ssh' or basename == 'micro', basename
 end
 
 wezterm.on('update-status', function(window, pane)
   local pane_id = pane:pane_id()
-  local is_target = is_passthrough_process(pane)
+  local is_target, target_name = is_passthrough_process(pane)
   local was_target = pane_proc_was_target[pane_id] or false
   pane_proc_was_target[pane_id] = is_target
 
@@ -577,11 +599,14 @@ wezterm.on('update-status', function(window, pane)
   end
 
   local mode = window:active_key_table()
-  if mode ~= nil and cached_hints[mode] ~= nil then
-    window:set_right_status(cached_hints[mode])
-  else
-    window:set_right_status(cached_hints.normal)
+  local hint = cached_hints[mode] or cached_hints.normal
+  if mode == 'passthrough_mode' and target_name == 'ssh' then
+    local command = (pane:get_user_vars() or {}).WEZTERM_PROG or ''
+    local program = command:match('^%s*%^?([^%s]+)')
+    program = program and program:match('([^/]+)$')
+    hint = cached_hints['ssh_' .. (program or '')] or hint
   end
+  window:set_right_status(hint)
 end)
 
 -- ============================================================
