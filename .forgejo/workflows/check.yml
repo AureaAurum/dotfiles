@@ -1,0 +1,14 @@
+name: Check dotfiles
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ci
+    steps:
+      - uses: actions/checkout@v4
+      - run: apt-get update && apt-get install -y --no-install-recommends stow
+      - run: bash tests/check.sh
