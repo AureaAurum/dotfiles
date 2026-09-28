@@ -88,7 +88,7 @@ let fish_completer = {|spans: list<string>|
 
 # 3. 動的フォールバック・メタコンプリータ
 let external_completer = {|place|
-    let spans = if ($place | describe | str starts-with "record") { $place.command } else { $place }
+    let spans = $place.command
     # まずCarapaceで補完を試みる
     let carapace_res = (do $carapace_completer $spans)
 
@@ -172,6 +172,14 @@ $env.config.keybindings ++=  [
         }
     }
   ]
+
+def complete_cd [token: record] {
+    {
+        completions: (^zoxide query --list -- $token.text | lines)
+        fallback: true
+        options: { completion_algorithm: fuzzy }
+    }
+}
 
 # Source generated configs from env.nu
 source ~/.cache/nushell/mise.nu
