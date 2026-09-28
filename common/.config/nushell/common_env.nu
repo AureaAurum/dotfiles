@@ -21,7 +21,9 @@ if not (which mise | is-empty) {
 
 # Zoxide
 if not (which zoxide | is-empty) {
-    ^zoxide init nushell --cmd cd | save -f ($cache_dir | path join "zoxide.nu")
+    ^zoxide init nushell --cmd cd
+    | str replace '...rest: directory]' '...rest: directory@complete_cd]'
+    | save -f ($cache_dir | path join "zoxide.nu")
 } else {
     "" | save -f ($cache_dir | path join "zoxide.nu")
 }

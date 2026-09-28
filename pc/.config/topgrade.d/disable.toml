@@ -1,6 +1,16 @@
 [misc]
-disable = ["go","node","pnpm","cargo","snap"]
+disable = [
+    "go",
+    "node",
+    "pnpm",
+    "cargo",
+    "snap",
+    "uv",
+    "zed",
+    "antigravity_cli",
+    "vscode",
+]
 
 [containers]
 # Ignore local Docker images that do not exist in a remote registry
-ignored_containers = ["open-webui-gpt-researcher*"]
+ignored_containers = ["open-webui-gpt-researcher*", "aarch64-unknown-linux*"]
