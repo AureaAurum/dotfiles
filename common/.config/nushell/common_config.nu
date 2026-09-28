@@ -173,6 +173,14 @@ $env.config.keybindings ++=  [
     }
   ]
 
+def complete_cd [token: record] {
+    {
+        completions: (^zoxide query --list -- $token.text | lines)
+        fallback: true
+        options: { completion_algorithm: fuzzy }
+    }
+}
+
 # Source generated configs from env.nu
 source ~/.cache/nushell/mise.nu
 source ~/.cache/nushell/zoxide.nu
