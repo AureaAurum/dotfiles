@@ -88,7 +88,7 @@ let fish_completer = {|spans: list<string>|
 
 # 3. 動的フォールバック・メタコンプリータ
 let external_completer = {|place|
-    let spans = if ($place | describe | str starts-with "record") { $place.command } else { $place }
+    let spans = $place.command
     # まずCarapaceで補完を試みる
     let carapace_res = (do $carapace_completer $spans)
 
