@@ -27,3 +27,21 @@ for profile in pc server; do
     test -e "$tmp/$profile/.config/nushell/config.nu"
     test -e "$tmp/$profile/.config/nushell/env.nu"
 done
+
+# Exercise the installed Nushell's external completion callback through both profiles.
+mkdir -p "$tmp/home/.cache/nushell" "$tmp/bin"
+for name in mise zoxide carapace starship navi; do
+    : > "$tmp/home/.cache/nushell/$name.nu"
+done
+cat > "$tmp/bin/carapace" <<'EOF'
+#!/bin/sh
+[ "$*" = 'git nushell git ch' ] || exit 1
+printf '[{"value":"checkout ","description":"test candidate"}]\n'
+EOF
+chmod +x "$tmp/bin/carapace"
+for profile in pc server; do
+    HOME="$tmp/home" PATH="$tmp/bin:$PATH" nu --config "$tmp/$profile/.config/nushell/config.nu" -c '
+        let values = ("git ch" | commandline complete --detailed | get value)
+        if "checkout " not-in $values { error make {msg: "git completion failed"} }
+    '
+done
