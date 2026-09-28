@@ -2,6 +2,7 @@
 
 Configuration files for my Unix environments (WSL2, RPi, OCI).
 Managed by Ansible (Hybrid setup: Apt for system, Homebrew for tools).
+All environments use Nushell 0.116.0; older versions are unsupported.
 
 ## 🛠 Modern Unix Tools & Abbreviations
 
