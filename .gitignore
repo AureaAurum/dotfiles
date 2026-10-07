@@ -2,3 +2,5 @@
 /common/.config/micro/backups/
 /common/.config/micro/buffers/
 pc/.config/nvchecker/7zip_old.json~
+pc/.config/pipewire/irs/atmos.wav
+pc/.config/pipewire/irs/*
