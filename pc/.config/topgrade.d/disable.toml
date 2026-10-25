@@ -9,6 +9,7 @@ disable = [
     "zed",
     "antigravity_cli",
     "vscode",
+    "gcloud",
 ]
 
 [containers]
