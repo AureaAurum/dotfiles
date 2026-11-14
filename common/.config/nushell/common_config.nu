@@ -189,9 +189,9 @@ def complete_cd [token: record] {
 
     # 1. 実体ディレクトリ + ディレクトリへのシンボリックリンクを取得
     let local_dirs = if ($base_dir | path exists) and (($base_dir | path type) == "dir") {
-        ls -a $base_dir
+        ls -la $base_dir
         | where { |it|
-            $it.type == "dir" or ($it.type == "symlink" and ($it.name | path type) == "dir")
+            $it.type == "dir" or ($it.type == "symlink" and ($it.target | path type) == "dir")
         }
         | get name
         | each { |it|
