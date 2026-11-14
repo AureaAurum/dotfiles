@@ -174,6 +174,15 @@ $env.config.keybindings ++=  [
   ]
 
 def complete_cd [token: record] {
+    # シンボリックリンク（相対・多段含む）を最終実体まで解決してディレクトリか判定する共通処理
+    def is_target_dir [p: string] {
+        try {
+            ($p | path expand | path type) == "dir"
+        } catch {
+            false
+        }
+    }
+
     let query = ($token.text | str trim)
     let is_empty = ($query == "" or $token.kind == "head")
 
@@ -188,15 +197,26 @@ def complete_cd [token: record] {
     }
 
     # 1. 実体ディレクトリ + ディレクトリへのシンボリックリンクを取得
-    let local_dirs = if ($base_dir | path exists) and (($base_dir | path type) == "dir") {
-        ls -la $base_dir
+    #    base_dir 自体がシンボリックリンク（例: cd link/child）でも is_target_dir で通過する
+    let local_dirs = if (is_target_dir $base_dir) {
+        # base_dir が末尾スラッシュなしのシンボリックリンクの場合、ls -a $base_dir はリンク自体1行を返すため、
+        # 配下を列挙させるために path join "."（または末尾 "/"）を渡すか、元プレフィックスを保持して展開する
+        let list_target = ($base_dir | path join ".")
+        ls -a $list_target
         | where { |it|
-            $it.type == "dir" or ($it.type == "symlink" and ($it.target | path type) == "dir")
+            $it.type == "dir" or ($it.type == "symlink" and (is_target_dir $it.name))
         }
         | get name
         | each { |it|
+            # ls -a ($base_dir | path join ".") の name は正規化されるため、
+            # base_dir が "." のときは "./" が付かないよう調整し、サブパス時は入力プレフィックスを維持する
+            let rel_name = if $base_dir == "." {
+                $it | path basename
+            } else {
+                $base_dir | str trim --right --char '/' | path join ($it | path basename)
+            }
             {
-                value: $"($it)/"
+                value: $"($rel_name)/"
                 style: { fg: "cyan", attr: "b" }
             }
         }
