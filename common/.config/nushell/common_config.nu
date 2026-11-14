@@ -174,13 +174,33 @@ $env.config.keybindings ++=  [
   ]
 
 def complete_cd [token: record] {
+    # 組み込み directory 補完を直接取得し、相対オフセットの span だけ除去して元の LS_COLORS 色を維持
+    let local_dirs = (
+        $token.text
+        | commandline complete --type directory --detailed
+        | reject span
+    )
+
+    let local_values = ($local_dirs | get value)
+    let zoxide_dirs = (
+        ^zoxide query --list --exclude $env.PWD
+        | lines
+        | where { |it|
+            (($it | path dirname) != $env.PWD) and ($"($it)/" not-in $local_values) and ($it not-in $local_values)
+        }
+        | each { |it| { value: $it } }
+    )
+
     {
-        completions: (^zoxide query --list -- $token.text | lines)
-        fallback: true
-        options: { completion_algorithm: fuzzy }
+        completions: ($local_dirs | append $zoxide_dirs)
+        fallback: false
+        options: {
+            sort: false
+            completion_algorithm: fuzzy
+            case_sensitive: false
+        }
     }
 }
-
 # Source generated configs from env.nu
 source ~/.cache/nushell/mise.nu
 source ~/.cache/nushell/zoxide.nu
