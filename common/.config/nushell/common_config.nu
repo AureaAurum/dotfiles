@@ -174,13 +174,57 @@ $env.config.keybindings ++=  [
   ]
 
 def complete_cd [token: record] {
+    let query = ($token.text | str trim)
+    let is_empty = ($query == "" or $token.kind == "head")
+
+    let base_dir = if $is_empty {
+        "."
+    } else if ($query | str ends-with "/") {
+        $query
+    } else if ($query | str contains "/") {
+        $query | path dirname
+    } else {
+        "."
+    }
+
+    # 1. 実体ディレクトリ + ディレクトリへのシンボリックリンクを取得
+    let local_dirs = if ($base_dir | path exists) and (($base_dir | path type) == "dir") {
+        ls -a $base_dir
+        | where { |it|
+            $it.type == "dir" or ($it.type == "symlink" and ($it.name | path type) == "dir")
+        }
+        | get name
+        | each { |it|
+            {
+                value: $"($it)/"
+                style: { fg: "cyan", attr: "b" }
+            }
+        }
+    } else {
+        []
+    }
+
+    # 2. zoxide 履歴（重複除外）
+    let local_values = ($local_dirs | get value)
+    let zoxide_dirs = (
+        ^zoxide query --list --exclude $env.PWD
+        | lines
+        | where { |it|
+            (($it | path dirname) != $env.PWD) and ($"($it)/" not-in $local_values) and ($it not-in $local_values)
+        }
+        | each { |it| { value: $it } }
+    )
+
     {
-        completions: (^zoxide query --list -- $token.text | lines)
-        fallback: true
-        options: { completion_algorithm: fuzzy }
+        completions: ($local_dirs | append $zoxide_dirs)
+        fallback: false
+        options: {
+            sort: false
+            completion_algorithm: fuzzy
+            case_sensitive: false
+        }
     }
 }
-
 # Source generated configs from env.nu
 source ~/.cache/nushell/mise.nu
 source ~/.cache/nushell/zoxide.nu
